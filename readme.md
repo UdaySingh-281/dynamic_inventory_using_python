@@ -3,7 +3,7 @@
 This project demonstrates two approaches for generating a **dynamic Ansible inventory** using Python:  
 
 1. **Using Jinja2 templating** – Dynamically rendering an inventory file from a template.  
-2. **Using pure logic** – Writing inventory content directly to a text file (`inventory.ini`).  
+2. **Using pure logic** – Writing inventory content directly to a file (`inventory.ini`).  
 
 ## Why Dynamic Inventory?  
 Dynamic inventories allow flexible infrastructure management by generating host configurations on the fly, making automation more scalable and adaptable.  
