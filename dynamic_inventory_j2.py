@@ -6,11 +6,10 @@ from jinja2 import Template
 KEY_DIR = os.path.expanduser("~/keys/")
 os.makedirs(KEY_DIR, exist_ok=True)  # Ensure the directory exists
 
-# Load Jinja2 template
+# jinja2 Template path
 TEMPLATE_FILE = "inventory_template.j2"
 
 def get_key_for_instance(instance_id):
-    """ Check if a private key exists for the given instance. If not, ask user to enter it and save it. """
     key_file_path = os.path.join(KEY_DIR, f"{instance_id}.pem")
 
     if os.path.exists(key_file_path):
@@ -21,9 +20,8 @@ def get_key_for_instance(instance_id):
         key_path = input(f"Enter the full path of the private key for {instance_id} (or press Enter to create a new one): ").strip()
 
         if key_path and os.path.exists(key_path):
-            return key_path  # User provided an existing key file
+            return key_path
 
-        # If user didn't provide a path, ask for the private key content
         print(f"Enter the private key for instance {instance_id} (Paste your key and press Ctrl+D when done):")
         private_key_content = []
         while True:
@@ -33,11 +31,9 @@ def get_key_for_instance(instance_id):
                 break
             private_key_content.append(line)
 
-        # Save the new key file
         with open(key_file_path, "w") as key_file:
             key_file.write("\n".join(private_key_content) + "\n")
 
-        # Set proper file permissions
         os.chmod(key_file_path, 0o600)
 
         print(f"Private key saved at: {key_file_path}")
@@ -71,7 +67,6 @@ def get_instances():
     # Render the template with the gathered inventory data
     inventory_content = template.render(inventory=inventory)
 
-    # Write the rendered template to the inventory file
     with open("inventory.ini", "w") as f:
         f.write(inventory_content)
 
