@@ -6,7 +6,6 @@ KEY_DIR = os.path.expanduser("~/keys/")
 os.makedirs(KEY_DIR, exist_ok=True)  # Ensure the directory exists
 
 def get_key_for_instance(instance_id):
-    """ Check if a private key exists for the given instance. If not, ask user to enter it and save it. """
     key_file_path = os.path.join(KEY_DIR, f"{instance_id}.pem")
 
     if os.path.exists(key_file_path):
@@ -17,9 +16,8 @@ def get_key_for_instance(instance_id):
         key_path = input(f"Enter the full path of the private key for {instance_id} (or press Enter to create a new one): ").strip()
 
         if key_path and os.path.exists(key_path):
-            return key_path  # User provided an existing key file
+            return key_path 
 
-        # If user didn't provide a path, ask for the private key content
         print(f"Enter the private key for instance {instance_id} (Paste your key and press Ctrl+D when done):")
         private_key_content = []
         while True:
@@ -29,11 +27,9 @@ def get_key_for_instance(instance_id):
                 break
             private_key_content.append(line)
 
-        # Save the new key file
         with open(key_file_path, "w") as key_file:
             key_file.write("\n".join(private_key_content) + "\n")
 
-        # Set proper file permissions
         os.chmod(key_file_path, 0o600)
 
         print(f"Private key saved at: {key_file_path}")
@@ -47,7 +43,6 @@ def get_instances():
 
     for reservation in instances['Reservations']:
         for instance in reservation['Instances']:
-            # instance_id = instance['InstanceId']
             private_ip = instance.get('PrivateIpAddress', '')
 
             tags = {tag['Key']: tag['Value'] for tag in instance.get('Tags', [])}
@@ -56,11 +51,10 @@ def get_instances():
             instance_name = tags["Name"]
             if instance_name.lower() != 'control-node' or instance_name.lower() != 'master-node':
                 print("\n Inside if..... ", instance_name.lower())
-                key_path = get_key_for_instance(instance_name)  # Get or create key dynamically
+                key_path = get_key_for_instance(instance_name)
                 inventory.setdefault(group_name, []).append((private_ip, key_path))
                 print(inventory,"\n")
 
-    # Write to inventory.ini with specific key for each instance
     with open("inventory.ini", "w") as f:
         for group, hosts in inventory.items():
             if group == 'ungrouped':
